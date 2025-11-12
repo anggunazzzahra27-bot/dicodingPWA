@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="favicon.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="manifest" href="manifest.json">
+  <title>Story App - Share Your Stories</title>
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="navbar-container">
+      <a class="nav-brand" href="#/home" aria-label="Story App Homepage">
+        Story App
+      </a>
+
+      <nav class="nav-links" role="navigation" aria-label="Main navigation">
+
+        <a href="#/home" class="nav-link">Home</a>
+        <a href="#/add" class="nav-link">Add Story</a>
+        <a href="#/login" class="nav-link">Login</a>
+        <a href="#/register" class="nav-link">Register</a>
+        <a href="#/my-story" class="nav-link">My Stories</a>
+        <div class="notification-toggle">
+          <label class="toggle-switch">
+            <input type="checkbox" id="notification-toggle" />
+            <span class="slider"></span>
+          </label>
+          <span id="notification-status">Notifikasi: Off</span>
+        </div>
+        <button id="logout-btn" class="nav-link logout"
+          style="display: none; border: none; background: none; color: white; cursor: pointer;">Logout</button>
+
+      </nav>
+
+      <!-- Mobile menu button (hidden on desktop) -->
+      <button id="drawer-button" class="drawer-button" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon">☰</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main-content" class="main-content" role="main"></main>
+
+  <footer role="contentinfo">
+    <div class="container">
+      <p>&copy; 2025 Story App. Share your amazing stories with the world.</p>
+    </div>
+  </footer>
+</body>
+
+</html>

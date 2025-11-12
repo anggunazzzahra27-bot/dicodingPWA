@@ -1,0 +1,93 @@
+{
+    "name": "Story App - Share Your Stories",
+    "short_name": "Story App",
+    "description": "Discover and share amazing stories from around the world.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#1976d2",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/images/android-launchericon-72-72.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/images/android-launchericon-96-96.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/images/android-launchericon-144-144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/images/android-launchericon-192-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/images/android-launchericon-512-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/images/screenshot-desktop-1.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/images/screenshot-mobile-1.png",
+            "sizes": "540x960",
+            "type": "image/png",
+            "form_factor": "narrow"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Tambah Story Baru",
+            "short_name": "Tambah Story",
+            "description": "Buat dan bagikan story baru",
+            "url": "/#/add",
+            "icons": [
+                {
+                    "src": "/images/logo",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        },
+        {
+            "name": "Story Saya",
+            "short_name": "My Story",
+            "description": "Lihat story yang telah saya buat",
+            "url": "/#/offline",
+            "icons": [
+                {
+                    "src": "/images/logo",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        }
+    ],
+    "categories": [
+        "lifestyle",
+        "social",
+        "entertainment"
+    ],
+    "dir": "ltr",
+    "lang": "id-ID",
+    "prefer_related_applications": false
+}
