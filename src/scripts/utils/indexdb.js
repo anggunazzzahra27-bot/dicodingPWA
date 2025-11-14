@@ -183,7 +183,47 @@ class StoryIndexDB {
       }
     });
   }
+  async updateStory(id, updates) {
+    await this._ensureDB();
 
+    return new Promise(async (resolve, reject) => {
+      try {
+        const existing = await this.getStoryById(id);
+        if (!existing) {
+          reject(new Error('Story not found'));
+          return;
+        }
+
+        const updatedStory = {
+          ...existing,
+          ...updates,
+          id: id,
+        };
+
+        const tx = this.db.transaction([STORE], 'readwrite');
+        const store = tx.objectStore(STORE);
+        const req = store.put(updatedStory);
+
+        req.onsuccess = () => {
+          console.log('Story updated in IndexedDB:', id);
+          resolve(updatedStory);
+        };
+
+        req.onerror = () => {
+          console.error('Error updating story:', req.error);
+          reject(req.error);
+        };
+
+        tx.onerror = () => {
+          console.error('Transaction error:', tx.error);
+          reject(tx.error);
+        };
+      } catch (error) {
+        console.error('Error in updateStory:', error);
+        reject(error);
+      }
+    });
+  }
   async deleteStory(id) {
     await this._ensureDB();
 

@@ -25,6 +25,10 @@ export default class StoryOffline {
             <button id="sync-btn" class="btn btn-primary">
               Sync My Story
             </button>
+
+            <a href="#/add" class="btn btn-success">
+              + Add New Story
+            </a>
           </div>
 
           <div id="sync-message" class="message" style="display: none;"></div>
@@ -87,7 +91,13 @@ export default class StoryOffline {
       .map(
         (story) => `
         <div class="story-card" data-id="${story.id}">
-          ${story.photo ? `<img src="${story.photo}" alt="Story photo" />` : ''}
+          ${
+            story.photoUrl || story.photoBase64
+              ? `<img src="${
+                  story.photoUrl || story.photoBase64
+                }" alt="Story photo" />`
+              : ''
+          }
           <div class="story-content">
             <h3>${story.description || 'No description'}</h3>
             <div class="story-meta">
@@ -98,12 +108,20 @@ export default class StoryOffline {
                 ${new Date(story.createdAt).toLocaleDateString('id-ID')}
               </span>
             </div>
-            <button 
-              class="btn btn-danger btn-delete" 
-              data-id="${story.id}"
-            >
-              Delete
-            </button>
+            <div class="story-actions">
+              <button 
+                class="btn btn-primary btn-edit" 
+                data-id="${story.id}"
+              >
+                Edit
+              </button>
+              <button 
+                class="btn btn-danger btn-delete" 
+                data-id="${story.id}"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       `
@@ -111,6 +129,14 @@ export default class StoryOffline {
       .join('');
 
     container.innerHTML = html;
+
+    const editBttons = container.querySelectorAll('.btn-edit');
+    editBttons.forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.target.dataset.id;
+        await this.editStory(id);
+      });
+    });
 
     const deleteButtons = container.querySelectorAll('.btn-delete');
     deleteButtons.forEach((btn) => {
@@ -121,6 +147,42 @@ export default class StoryOffline {
         }
       });
     });
+  }
+
+  async editStory(id) {
+    try {
+      const story = await storyIndexDB.getStoryById(id);
+
+      if (!story) {
+        this.showMessage('Story not found', 'error');
+        return;
+      }
+
+      const newDescription = prompt(
+        'Edit story description:',
+        story.description
+      );
+
+      if (newDescription === null) {
+        return;
+      }
+
+      if (!newDescription.trim()) {
+        this.showMessage('Description cannot be empty', 'error');
+        return;
+      }
+
+      await storyIndexDB.updateStory(id, {
+        description: newDescription.trim(),
+      });
+
+      await this.loadStories();
+
+      this.showMessage('Story updated successfully!', 'success');
+    } catch (error) {
+      console.error('Error editing story:', error);
+      this.showMessage('Failed to update story', 'error');
+    }
   }
 
   async deleteStory(id) {
@@ -135,7 +197,6 @@ export default class StoryOffline {
 
   async syncOfflineStories() {
     const syncBtn = document.getElementById('sync-btn');
-    const messageDiv = document.getElementById('sync-message');
 
     if (!navigator.onLine) {
       this.showMessage('Cannot sync: No internet connection', 'error');
@@ -161,7 +222,7 @@ export default class StoryOffline {
       this.showMessage('Sync failed: ' + error.message, 'error');
     } finally {
       syncBtn.disabled = false;
-      syncBtn.textContent = 'Sync Offline Stories';
+      syncBtn.textContent = 'Sync My Story';
     }
   }
 
