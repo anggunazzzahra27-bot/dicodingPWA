@@ -60,14 +60,25 @@ self.addEventListener('fetch', (e) => {
 });
 
 self.addEventListener('push', (e) => {
-  const payload = e.data.json();
+  const textPromise = e.data
+    ? e.data.text()
+    : Promise.resolve('Notifikasi tanpa data');
 
   const notification = {
     title: payload.title,
     options: { body: payload.body },
   };
 
-  self.registration.showNotification(notification.title, notification);
+  e.waitUntil(
+    textPromise.then((text) => {
+      return (
+        self.registration.showNotification(notification.title, notification),
+        {
+          body: text,
+        }
+      );
+    })
+  );
 });
 
 self.addEventListener('notificationclick', (e) => {

@@ -248,7 +248,13 @@ class StoryIndexDB {
       }
     });
   }
-
+  async displayStory(id) {
+    const story = await this.getStoryById(id);
+    if (!story) {
+      throw new Error('Story not found');
+    }
+    return story;
+  }
   async searchStories(keyword) {
     const stories = await this.getAllStories();
     if (!keyword || keyword.trim() === '') {
