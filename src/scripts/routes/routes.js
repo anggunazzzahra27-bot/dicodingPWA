@@ -12,7 +12,6 @@ const routes = {
   '/register': new RegisterPage(),
   '/add': new AddStoryPage(),
   '/my-story': new StoryOffline(),
-  '/simpan': new MyStoryPage(),
 };
 
 export default routes;

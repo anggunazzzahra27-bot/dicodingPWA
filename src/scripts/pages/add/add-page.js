@@ -1,6 +1,5 @@
 import L from 'leaflet';
 import StoryAPI from '../../data/api';
-import storyIndexDB from '../../utils/indexdb';
 
 export default class AddStoryPage {
   constructor() {
@@ -335,42 +334,26 @@ export default class AddStoryPage {
         lat: this.selectedLocation.lat,
         lon: this.selectedLocation.lon,
       };
-      if (navigator.onLine) {
-        const result = await StoryAPI.addStory(storyData);
-        console.log('Story created successfully:', result);
-        await storyIndexDB.saveToIDB({
-          description: storyData.description,
-          photo: result.data?.photo || '',
-          lat: storyData.lat,
-          lon: storyData.lon,
-        });
-        this._showMessage(
-          messageDiv,
-          'Story shared successfully! Redirecting to home...',
-          'success'
-        );
-      } else {
-        const offlineResult = await storyIndexDB.createStory(storyData);
 
-        console.log('Story saved offline:', offlineResult);
-        this._showMessage(
-          messageDiv,
-          'You are offline. Story saved locally and will be synced when you are back online.',
-          'info'
-        );
-      }
+      const result = await StoryAPI.addStory(storyData);
+
+      this._showMessage(
+        messageDiv,
+        'Story shared successfully! Redirecting to home...',
+        'success'
+      );
 
       // Redirect to home page
       if ('startViewTransition' in document) {
         document.startViewTransition(() => {
           setTimeout(() => {
             window.location.hash = '#/home';
-          }, 2000);
+          }, 1500);
         });
       } else {
         setTimeout(() => {
           window.location.hash = '#/home';
-        }, 2000);
+        }, 1500);
       }
     } catch (error) {
       this._showMessage(messageDiv, `Error: ${error.message}`, 'error');
