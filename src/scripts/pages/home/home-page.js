@@ -137,6 +137,7 @@ export default class HomePage {
                 : 'Unknown date'
             }</span>
           </div>
+          <button class="save-story-btn" data-id="${story.id}">Simpan</button>
         </div>
       </article>
     `
@@ -144,6 +145,30 @@ export default class HomePage {
       .join('');
 
     storiesListDiv.innerHTML = storiesHTML;
+    const saveStoryBtns = document.querySelectorAll('.save-story-btn');
+    saveStoryBtns.forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        const storyId = e.target.dataset.id;
+        const story = this.stories.find((s) => s.id === storyId);
+        if (story) {
+          try {
+            await storyIndexDB.saveToIDB({
+              id: story.id,
+              description: story.description,
+              photoUrl: story.photoUrl,
+              lat: story.lat,
+              lon: story.lon,
+              createdAt: story.createdAt,
+              syncStatus: 'saved',
+            });
+            alert('Story berhasil disimpan!');
+          } catch (err) {
+            console.error(err);
+            alert('Gagal menyimpan story');
+          }
+        }
+      });
+    });
   }
 
   _initializeMap() {

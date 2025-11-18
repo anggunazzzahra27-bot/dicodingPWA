@@ -1,5 +1,3 @@
-import StoryAPI from '../data/api.js';
-
 const DB_NAME = 'StoryAppDB';
 const STORE = 'stories';
 
@@ -63,37 +61,34 @@ class StoryIndexDB {
   async createStory(data) {
     await this._ensureDB();
 
-    if (navigator.onLine) {
-      try {
-        const result = await StoryAPI.addStory(data);
-        const story = {
-          id: result.data?.id || Date.now().toString(),
-          description: data.description,
-          photoUrl: result.data?.photoUrl || '',
-          lat: data.lat,
-          lon: data.lon,
-          createdAt: new Date().toISOString(),
-          syncStatus: 'synced',
-        };
-        await this.saveToIDB(story);
-        return { success: true, online: true, data: story };
-      } catch (error) {
-        console.error('Error creating story online:', error);
-        throw error;
-      }
-    } else {
-      const story = {
-        id: `offline_${Date.now()}`,
-        description: data.description,
-        photoFile: data.photo,
-        lat: data.lat,
-        lon: data.lon,
-        createdAt: new Date().toISOString(),
-        syncStatus: 'pending',
-      };
-      await this.saveToIDB(story);
-      return { success: true, online: false, data: story };
-    }
+    const isOnline = navigator.onLine;
+
+    const storyId = isOnline
+      ? `online_local_${Date.now()}`
+      : `offline_${Date.now()}`;
+    const syncStatus = isOnline ? 'synced' : 'pending';
+
+    const story = {
+      id: storyId,
+      description: data.description,
+      photoFile: data.photo,
+      lat: data.lat,
+      lon: data.lon,
+      createdAt: new Date().toISOString(),
+      syncStatus: syncStatus,
+      isSaved: false,
+    };
+
+    await this.saveToIDB(story);
+
+    return {
+      success: true,
+      online: isOnline,
+      data: story,
+      message: isOnline
+        ? 'Story saved locally, ready for API sync.'
+        : 'Story saved locally and marked as pending.',
+    };
   }
 
   async saveToIDB(story) {
@@ -125,24 +120,8 @@ class StoryIndexDB {
       }
     });
   }
-
   async getAllStories(refresh = false) {
     await this._ensureDB();
-
-    if (navigator.onLine && refresh) {
-      try {
-        const result = await StoryAPI.getAllStories();
-        for (const story of result.listStory || []) {
-          await this.saveToIDB({
-            ...story,
-            syncStatus: 'synced',
-            createdAt: story.createdAt || new Date().toISOString(),
-          });
-        }
-      } catch (error) {
-        console.error('Error refreshing stories from API:', error);
-      }
-    }
 
     return new Promise((resolve) => {
       try {
@@ -183,6 +162,7 @@ class StoryIndexDB {
       }
     });
   }
+
   async updateStory(id, updates) {
     await this._ensureDB();
 
@@ -224,6 +204,7 @@ class StoryIndexDB {
       }
     });
   }
+
   async deleteStory(id) {
     await this._ensureDB();
 
@@ -248,6 +229,7 @@ class StoryIndexDB {
       }
     });
   }
+
   async displayStory(id) {
     const story = await this.getStoryById(id);
     if (!story) {
@@ -255,6 +237,7 @@ class StoryIndexDB {
     }
     return story;
   }
+
   async searchStories(keyword) {
     const stories = await this.getAllStories();
     if (!keyword || keyword.trim() === '') {
@@ -286,52 +269,21 @@ class StoryIndexDB {
   async filterStories(type = 'all') {
     const stories = await this.getAllStories();
     if (type === 'all') return stories;
+
+    if (type === 'saved') {
+      return stories.filter((s) => s.isSaved === true);
+    }
+
     return stories.filter((s) => s.syncStatus === type);
   }
 
   async syncPending() {
-    await this._ensureDB();
-
-    if (!navigator.onLine) {
-      return { synced: 0, message: 'No internet connection' };
-    }
-
-    const pending = await this.filterStories('pending');
-    console.log(`Found ${pending.length} pending stories to sync`);
-
-    if (pending.length === 0) {
-      return { synced: 0, message: 'No pending stories' };
-    }
-
-    let synced = 0;
-    const errors = [];
-
-    for (const story of pending) {
-      try {
-        console.log('Syncing story:', story.id);
-
-        await StoryAPI.addStory({
-          description: story.description,
-          photo: story.photoFile,
-          lat: story.lat,
-          lon: story.lon,
-        });
-
-        await this.deleteStory(story.id);
-        synced++;
-
-        console.log('Story synced successfully:', story.id);
-      } catch (error) {
-        console.error('Error syncing story:', story.id, error);
-        errors.push({ id: story.id, error: error.message });
-      }
-    }
-
+    console.warn(
+      'syncPending called: API logic must be moved to another module/component.'
+    );
     return {
-      synced,
-      total: pending.length,
-      errors: errors.length > 0 ? errors : undefined,
-      message: `Synced ${synced} of ${pending.length} stories`,
+      synced: 0,
+      message: 'Syncing logic is no longer handled by StoryIndexDB',
     };
   }
 

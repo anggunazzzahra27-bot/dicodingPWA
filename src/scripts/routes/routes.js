@@ -3,7 +3,6 @@ import LoginPage from '../pages/login/login-page';
 import RegisterPage from '../pages/register/register-page';
 import AddStoryPage from '../pages/add/add-page';
 import StoryOffline from '../pages/detail/story';
-import MyStoryPage from '../pages/offline-story/offline-story';
 
 const routes = {
   '/': new HomePage(),
